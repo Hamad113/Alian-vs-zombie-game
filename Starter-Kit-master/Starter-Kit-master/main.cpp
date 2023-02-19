@@ -10,26 +10,25 @@
 //
 #include <iostream>
 #include <string>
+#include <vector>
 using namespace std;
 
 
-const int kRows = 7;
-const int kColumns = 40;
-const int defaultmiddle = kColumns / 2;
-char kBoard[kRows][kColumns];
+int kRows = 7;
+int kColumns = 40;
+vector<vector<char>> kBoard(kRows, vector<char>(kColumns, ' '));
 char myword[] = { 'h' , '>' , 'h' , 'r' , 'p' , '^' , 'p', '<', 'r', 'v' };
-const char allien = 'A';
-int allien_attack = 10;
-int allien_life = 100;
-int zoombie_life = 200, zoombie_range = 10, zoombie_attack = 200;
-int zoombie_count = 2;
+int zoombie_life = 200, zoombie_range = 5;
+int Alient_health = 100;
+int Alein_attack = 0;
+int zoombie_attack = 0;
 
 
 int ClearScreen()
 {
 #if defined(_WIN32)
     return std::system("cls");
-#elif defined(_linux) || defined(__APPLE_)
+#elif defined(__linux__) || defined(__APPLE__)
     return std::system("clear");
 #endif
 }
@@ -38,7 +37,7 @@ int Pause()
 {
 #if defined(_WIN32)
     return std::system("pause");
-#elif defined(_linux) || defined(__APPLE_)
+#elif defined(__linux__) || defined(__APPLE__)
     return std::system(R"(read -p "Press any key to continue . . . " dummy)");
 #endif
 }
@@ -54,6 +53,240 @@ void ShowGameBoard()
         cout << endl;
     }
 
+}
+int total_zombies = 2;
+void MoveAlien()
+{
+    char movement;
+    cout << "Move the alien (w = up, s = down, a = left, d = right): ";
+    cin >> movement;
+
+    int alienRow, alienCol;
+    for (int row = 0; row < kRows; ++row)
+    {
+        for (int col = 0; col < kColumns; ++col)
+        {
+            if (kBoard[row][col] == 'A')
+            {
+                alienRow = row;
+                alienCol = col;
+                break;
+            }
+        }
+    }
+    switch (movement)
+    {
+    case 'w':
+        if (alienRow > 1 && kBoard[alienRow - 2][alienCol] != 'r')
+        {
+            int random = rand() % 11;
+            kBoard[alienRow][alienCol] = myword[random];
+            if (kBoard[alienRow - 2][alienCol] == '<' || kBoard[alienRow - 2][alienCol] == '>')
+            {
+                Alein_attack += 5;
+                cout << "Alien attacked Increased!" << endl;
+            }
+            if (kBoard[alienRow - 2][alienCol] == 'h')
+            {
+                Alient_health += 10;
+                cout << "Health increased by 10!" << endl;
+            }
+            if (kBoard[alienRow - 2][alienCol] == 'p')
+            {
+                zoombie_life -= 10;
+                cout << "Zombie health decreased!" << endl;
+            }
+            if (kBoard[alienRow - 2][alienCol] == '1' || kBoard[alienRow - 2][alienCol] == '2')
+            {
+                cout << "Zombie KILLED!" << endl;
+                total_zombies--;
+            }
+            kBoard[alienRow - 2][alienCol] = 'A';
+        }
+        break;
+    case 's':
+        if (alienRow < kRows - 2 && kBoard[alienRow + 2][alienCol] != 'r')
+        {
+            int random = rand() % 11;
+            kBoard[alienRow][alienCol] = myword[random];
+            if (kBoard[alienRow + 2][alienCol] == '<' || kBoard[alienRow + 2][alienCol] == '>')
+            {
+                Alein_attack += 5;
+                cout << "Alien attacked Increased!" << endl;
+            }
+            if (kBoard[alienRow + 2][alienCol] == 'h')
+            {
+                Alient_health += 10;
+                cout << "Health increased by 10!" << endl;
+            }
+            if (kBoard[alienRow + 2][alienCol] == 'p')
+            {
+                zoombie_life -= 10;
+                cout << "Zombie health decreased!" << endl;
+            }
+            if (kBoard[alienRow + 2][alienCol] == '1' || kBoard[alienRow + 2][alienCol] == '2')
+            {
+                cout << "Zombie KILLED" << endl;
+                total_zombies--;
+            }
+            kBoard[alienRow + 2][alienCol] = 'A';
+        }
+        break;
+    case 'a':
+        if (alienCol > 1 && kBoard[alienRow][alienCol - 2] != 'r')
+        {
+            int random = rand() % 11;
+            kBoard[alienRow][alienCol] = myword[random];
+            if (kBoard[alienRow][alienCol - 2] == '<' || kBoard[alienRow][alienCol - 2] == '>')
+            {
+                Alein_attack += 5;
+                cout << "Alien attacked Increased!" << endl;
+            }
+            if (kBoard[alienRow][alienCol - 2] == 'h')
+            {
+                Alient_health += 10;
+                cout << "Health increased by 10!" << endl;
+            }
+            if (kBoard[alienRow][alienCol - 2] == 'p')
+            {
+                zoombie_life -= 10;
+                cout << "Zombie health decreased!" << endl;
+            }
+            if (kBoard[alienRow][alienCol - 2] == '1' || kBoard[alienRow][alienCol - 2] == '2')
+            {
+                cout << "Zombie KILLED" << endl;
+                total_zombies--;
+            }
+            kBoard[alienRow][alienCol - 2] = 'A';
+        }
+        break;
+    case 'd':
+        if (alienCol < kColumns - 2 && kBoard[alienRow][alienCol + 2] != 'r')
+        {
+            int random = rand() % 11;
+            kBoard[alienRow][alienCol] = myword[random];
+            if (kBoard[alienRow][alienCol + 2] == '<' || kBoard[alienRow][alienCol + 2] == '>')
+            {
+                Alein_attack += 5;
+                cout << "Alien attacked Increased!" << endl;
+            }
+            if (kBoard[alienRow][alienCol + 2] == 'h')
+            {
+                Alient_health += 10;
+                cout << "Health increased by 10!" << endl;
+            }
+            if (kBoard[alienRow][alienCol + 2] == 'p')
+            {
+                zoombie_life -= 10;
+                cout << "Zombie health decreased!" << endl;
+            }
+            if (kBoard[alienRow ][alienCol + 2] == '1' || kBoard[alienRow][alienCol + 2] == '2')
+            {
+                cout << "Zombie KILLED" << endl;
+                total_zombies--;
+            }
+            kBoard[alienRow][alienCol + 2] = 'A';
+        }
+        break;
+    default:
+        break;
+    }
+    if (total_zombies == 0)
+    {
+        cout << "ALL ZOOMBIES KILLED GAME OVER" << endl;
+        exit(0);
+    }
+    if (zoombie_life < 1)
+    {
+        cout << "ALL ZOOMBIES KILLED GAME OVER" << endl;
+        exit(0);
+    }
+    
+}
+void MoveZombies()
+{
+    int zombieRow[2], zombieCol[2];
+    int count = 0;
+    for (int row = 0; row < kRows; ++row)
+    {
+        for (int col = 0; col < kColumns; ++col)
+        {
+            if (kBoard[row][col] == '1' || kBoard[row][col] == '2')
+            {
+                zombieRow[count] = row;
+                zombieCol[count] = col;
+                ++count;
+            }
+        }
+    }
+
+    for (int i = 0; i < 2; ++i)
+    {
+        int direction = rand() % 4;
+        switch (direction)
+        {
+        case 0:
+            if (zombieRow[i] > 1)
+            {
+                int newRow = zombieRow[i] - 2;
+                kBoard[newRow][zombieCol[i]] = kBoard[zombieRow[i]][zombieCol[i]];
+                kBoard[zombieRow[i]][zombieCol[i]] = '.';
+                zombieRow[i] = newRow;
+            }
+            break;
+        case 1:
+            if (zombieRow[i] < kRows - 2)
+            {
+                int newRow = zombieRow[i] + 2;
+                kBoard[newRow][zombieCol[i]] = kBoard[zombieRow[i]][zombieCol[i]];
+                kBoard[zombieRow[i]][zombieCol[i]] = '.';
+                zombieRow[i] = newRow;
+            }
+            break;
+        case 2:
+            if (zombieCol[i] > 1)
+            {
+                int newCol = zombieCol[i] - 2;
+                kBoard[zombieRow[i]][newCol] = kBoard[zombieRow[i]][zombieCol[i]];
+                kBoard[zombieRow[i]][zombieCol[i]] = '.';
+                zombieCol[i] = newCol;
+            }
+            break;
+        case 3:
+            if (zombieCol[i] < kColumns - 2)
+            {
+                int newCol = zombieCol[i] + 2;
+                kBoard[zombieRow[i]][newCol] = kBoard[zombieRow[i]][zombieCol[i]];
+                kBoard[zombieRow[i]][zombieCol[i]] = '.';
+                zombieCol[i] = newCol;
+            }
+            break;
+        }
+        int kAlienRow, kAlienCol;
+        for (int row = 0; row < kRows; ++row)
+        {
+            for (int col = 0; col < kColumns; ++col)
+            {
+                if (kBoard[row][col] == 'A')
+                {
+                    kAlienRow = row;
+                    kAlienCol = col;
+                    break;
+                }
+            }
+        }
+        
+        if (abs(zombieRow[i] - kAlienRow) <= zoombie_range && abs(zombieCol[i] - kAlienCol) <= zoombie_range)
+        {
+            Alient_health -= zoombie_attack;
+            cout << "Alien hit by zombie " << i + 1 << "! Alien health is now " << Alient_health << endl;
+        }
+    }
+    if (Alient_health == 0 || Alient_health < 0)
+    {
+        cout << "ZOOMBIES WON!" << endl;
+        exit(0);
+    }
 }
 
 void CreatedefaultBoard()
@@ -84,44 +317,52 @@ void CreatedefaultBoard()
                     int random = rand() % 11;
                     kBoard[row][col] = myword[random];
                     
-                    // setting Allien default position
-                    kBoard[3][21] = allien;
+                    
+                    kBoard[3][21] = 'A';
                     kBoard[5][31] = '1';
                     kBoard[1][9] = '2';
 
                 }
             }
         }
-    
-    cout << defaultmiddle << endl;
 
-    //setting to default
-    allien_life = 100;
-    allien_attack = 10;
+    
+    int allien_life = 100;
+    int allien_attack = 10;
+    
     srand(time(0));
-    zoombie_life = rand() % 191 + 10, zoombie_range = rand() % 30 + 10, zoombie_attack = rand() % 50 + 10;
+    zoombie_life = rand() % 70 + 10, zoombie_range = rand() % 10 + 1, zoombie_attack = rand() % 10 + 1;
     ShowGameBoard();
 }
 void CreatecustomBoard() {
-    int kRows = 0;
-    int kColumns = 0;
+    
     cout << "Enter Board Rows : ";
     cin >> kRows;
     cout << "Enter Board Columns : ";
     cin >> kColumns;
-    cout << "Enter zoombie numbers : ";
-    cin >> zoombie_count;
     cout << "Enter zoombie life : ";
     cin >> zoombie_life;
     cout << "Enter zoombie range : ";
     cin >> zoombie_range;
+    kRows = kRows * 2;
+    kColumns = kColumns * 2;
     int rowshalf = kRows / 2;
     int colhalf = kColumns / 2; 
 
-    for (int row = 0; row < kRows; ++row)
-        for (int col = 0; col < kColumns; ++col)
+    int newRows = kRows;
+    int newColumns = kColumns;
+
+    kBoard.resize(newRows);
+    for (int i = 0; i < kBoard.size(); i++) {
+        kBoard[i].resize(newColumns, ' ');
+    }
+
+
+
+    for (int row = 0; row < kRows; row++)
+        for (int col = 0; col < kColumns; col++)
         {
-            if (row == 0 || row == 2 || row == 4 || row == 6)
+            if (row % 2 == 0)
             {
                 if (col % 2 == 0)
                 {
@@ -132,7 +373,7 @@ void CreatecustomBoard() {
                     kBoard[row][col] = '+';
                 }
             }
-            else if (row == 1 || row == 3 || row == 5)
+            else
             {
                 if (col % 2 == 0)
                 {
@@ -146,27 +387,40 @@ void CreatecustomBoard() {
             }
         }
 
-    // placing allien and zoombie
-    kBoard[rowshalf][colhalf] = allien;
+    
+    if (kBoard[rowshalf ][colhalf - 1] == '+' || kBoard[rowshalf][colhalf - 1] == '-') {
+        kBoard[rowshalf -1][colhalf] = 'A';
+    }
+    else {
+        kBoard[rowshalf][colhalf] = 'A';
+    }
+    
+    
     int zoombies = 0;
     string temp = "";
-    for (int i = 1; i <= zoombie_count; i++) {
-        zoombies = rand() % zoombie_count;
+    for (int i = 1; i <= 2; i++) {
+        zoombies = rand() % 2;
         temp = to_string(i);
         kBoard[zoombies][zoombies] = temp[0];
     }
     
-    ShowGameBoard();
-}
 
+    for (int row = 0; row < kRows; ++row)
+    {
+        for (int col = 0; col < kColumns; ++col)
+        {
+            std::cout << kBoard[row][col];
+        }
+        cout << endl;
+    }
+}
 void showstats() {
-    cout << "Allien      : Life " << allien_life << ", Attack " << allien_attack << endl;
-    for (int i = 1; i <= zoombie_count; i++) {
-        cout << "Zoombie " << i << " : Life " << zoombie_life << ", Attack " << allien_attack << ", Range " << zoombie_range << endl;;
+    cout << "Allien      : Life " << Alient_health << ", Attack " << Alein_attack << endl;
+    for (int i = 1; i <= total_zombies; i++) {
+        cout << "Zoombie " << i << " : Life " << zoombie_life << ", Attack " << zoombie_attack << ", Range " << zoombie_range << endl;;
     }
     cout << "Press 3 to return to main menu" << endl;
 }
-
 void game() {
     bool allien = true;
     bool zoombie = false;
@@ -180,18 +434,20 @@ void game() {
         cin >> choice;
         ClearScreen();
         if (choice == 1) {
-            //pf::ClearScreen();
+            
             CreatedefaultBoard();
             showstats();
         }
         else if (choice == 2) {
             if (allien == true) {
                 cout << "Alliens turn " << endl;
+                MoveAlien();
                 allien = false;
                 zoombie = true;
             }
             else if (zoombie == true) {
                 cout << "Zoombie turn " << endl;
+                MoveZombies();
                 allien = true;
                 zoombie = false;
             }
@@ -204,17 +460,12 @@ void game() {
         }
     }
 }
-
-
-
-
 void DemoPause()
 {
     cout << "Pausing Now" << endl;
     Pause();
     cout << endl;
 }
-
 void DemoClearScreen()
 {
     cout << "Pausing and Clearing Screen Now" << endl;
@@ -222,8 +473,6 @@ void DemoClearScreen()
     ClearScreen();
     cout << endl;
 }
- 
-
 int main()
 {
     cout << "===== Allien VS zombies =====" << endl;
@@ -249,7 +498,7 @@ int main()
         }
         else if (choice == 3) {
             break;
-  }
+        }
 
-}
+    }
 }
